@@ -1,0 +1,63 @@
+from numpy import random
+# with open("C:/Users/Marcel/PycharmProjects/pythonProject/bursttime10.txt") as f:
+#     bursts = [int(x) for x in f.read().split(",")]
+# with open("C:/Users/Marcel/PycharmProjects/pythonProject/arrivaltime10.txt") as f:
+#     arrivals = [int(x) for x in f.read().split(",")]
+# n=10
+
+# with open("C:/Users/Marcel/PycharmProjects/pythonProject/bursttime100.txt") as f:
+#     bursts = [int(x) for x in f.read().split(",")]
+# with open("C:/Users/Marcel/PycharmProjects/pythonProject/arrivaltime100.txt") as f:
+#     arrivals = [int(x) for x in f.read().split(",")]
+# n=100c
+
+# with open("C:/Users/Marcel/PycharmProjects/pythonProject/bursttime1000.txt") as f:
+#     bursts = [int(x) for x in f.read().split(",")]
+# with open("C:/Users/Marcel/PycharmProjects/pythonProject/arrivaltime1000.txt") as f:
+#     arrivals = [int(x) for x in f.read().split(",")]
+# n=1000
+
+n=100                                #liczba procesow
+arrivals=random.randint(20, size=(n)) #od 0 do 20
+bursts=random.randint(1,20, size=(n)) #od 1 do 20
+# arrivals = [0 for i in range(0, n)] #arr 0
+
+finish_time=[]
+turnaround_time=[]
+waiting_time=[]
+
+def average(arr):           #funkcja liczaca srednia
+    sum = 0
+    for item in arr:
+        sum+=item
+    return sum/len(arr)
+
+for i in range (0, n):
+    for j in range (0, n-i-1):
+        if arrivals[j]>arrivals[j+1]:
+            arrivals[j], arrivals[j+1] = arrivals[j+1], arrivals[j]
+            bursts[j], bursts[j+1] = bursts[j+1], bursts[j]
+
+for i in range (0, n):
+    if i==0:
+        if arrivals[0]==0:
+            finish_time.append(bursts[0])       #jezeli arrival time pierwszego procesu == 0 to finish time == burst time
+        else:
+           finish_time.append(arrivals[0]+bursts[0])    # w innym przypadku finishtime = arrival+burst
+    else:
+        finish_time.insert(i, finish_time[i-1]+bursts[i])               #obliczone finish time kazdego procesu ze wzoru na
+                                                                        #finishtime(poprzedni finishtime+burst time danego procesu)
+for i in range(0, n):
+    turnaround_time.append(finish_time[i]-arrivals[i])     #wzor na turnaround time
+    waiting_time.append(turnaround_time[i]-bursts[i])      #wzor na waiting time
+
+
+print()
+print("Process ID ", " Arrival Time ", "  Burst Time ", " Finish Time     ", " Turn Around Time ", " Waiting time ")
+for i in range (0, n):
+    print(str(i+1)+"\t\t\t "+str(arrivals[i])+"\t\t\t\t "+str(bursts[i])+"\t\t\t  "+str(finish_time[i])+"\t\t\t    "+str(turnaround_time[i])+" \t\t\t\t   "+str(waiting_time[i]))
+    average_turnaround_time=average(turnaround_time)
+    average_waiting_time=average(waiting_time)
+print("average waiting time ",average_waiting_time)
+print("average turnaround time ",average_turnaround_time)
+print("time passed:", finish_time[-1],"of clock units")
